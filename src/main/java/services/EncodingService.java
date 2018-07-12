@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Created
+ * Created by user
  */
 @Log4j
 public class EncodingService {

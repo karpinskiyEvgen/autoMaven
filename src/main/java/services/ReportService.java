@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Created
+ * Created by user
  */
 @Log4j
 public class ReportService {
@@ -63,7 +63,7 @@ public class ReportService {
 	public static void assertTrue(Boolean condition, String errorMessage ) {
 		if (!condition){
 			log.info("");
-			log.error("ACTUAL RESULT:");
+			log.error("Actual result:");
 			log.error(errorMessage);
 		}
 
@@ -74,7 +74,7 @@ public class ReportService {
 	public static void assertFalse(Boolean condition, String errorMessage ) {
 		if (condition){
 			log.info("");
-			log.error("ACTUAL RESULT:");
+			log.error("Actual result:");
 			log.error(errorMessage);
 		}
 
@@ -83,7 +83,7 @@ public class ReportService {
 	}
 
 	public static <T> void assertEquals(T condition1, T condition2, String errorMessage) {
-		String error = "ACTUAL RESULT:\n"+errorMessage+"\nExpected: \"" + condition2 + "\", but found: \"" + condition1 + "\".";
+		String error = "Actual result:\n"+errorMessage+"\nExpected: \"" + condition2 + "\", but found: \"" + condition1 + "\".";
 		if (condition1 instanceof String){
 			if (!((String) condition1).equalsIgnoreCase((String)condition2)) {
 				log.error(error);
@@ -99,7 +99,7 @@ public class ReportService {
 	}
 
 	public static void assertEquals(double expected, double actual, double delta, String errorMessage) {
-		String error = "ACTUAL RESULT:\n" + errorMessage + "\nExpected: \"" + expected + "\", but found: \"" + actual + "\".";
+		String error = "Actual result:\n" + errorMessage + "\nExpected: \"" + expected + "\", but found: \"" + actual + "\".";
 		if (Double.isInfinite(expected)) {
 			if (expected != actual) {
 				log.error(error);
@@ -113,7 +113,7 @@ public class ReportService {
 	public static <T> void assertNotEquals(T condition1, T condition2, String errorMessage) {
 		if (condition1.equals(condition2)){
 			log.info("");
-			log.error("ACTUAL RESULT:");
+			log.error("Actual result:");
 			log.error(errorMessage);
 			log.error("Expected: \"not " + condition2 + "\", but found: \"" + condition1 + "\".");
 		}

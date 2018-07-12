@@ -1,3 +1,5 @@
+package base;
+
 import lombok.extern.log4j.Log4j;
 import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.*;
@@ -5,10 +7,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
+import org.testng.ITestContext;
+import org.testng.annotations.*;
+import services.Constants;
+import services.PropertyReader;
 import services.TestConfig;
 
 import java.net.MalformedURLException;
@@ -21,18 +23,18 @@ import static services.ReportService.takeScreenshot;
 import static services.WebElementService.moveToCoordinate;
 
 /**
- * Created
+ * Created by user
  */
 @Log4j
 public class BaseTestCase {
 
-	public static TestConfig conf = initTestConfig();
 	public WebDriver driver;
 	private ThreadLocal<RemoteWebDriver> drivers = new ThreadLocal<>();
-	public static String server="localhost";
-	public static int port=4444;
-	protected boolean selenoidEnabled = Boolean.parseBoolean(Constants.propertyReader.getAnyVal("selenoidEnabled"));
-	protected String browserName = Constants.propertyReader.getAnyVal("browserName");
+	static PropertyReader propertyReader = new PropertyReader("properties/app.properties");
+	public  String server = propertyReader.getAnyVal("server");
+	public int port = Integer.parseInt(propertyReader.getAnyVal("port"));
+	protected boolean selenoidEnabled = Boolean.parseBoolean(propertyReader.getAnyVal("selenoidEnabled"));
+	protected String browserName = propertyReader.getAnyVal("browserName");
 	protected String testCaseName = this.getClass().getSimpleName();
 
 	/**
@@ -71,12 +73,68 @@ public class BaseTestCase {
 	 * @return test config with main urls for testing
 	 */
 	public static TestConfig initTestConfig() {
-		String env = Constants.propertyReader.getAnyVal("environment").toLowerCase();
+		String env = propertyReader.getAnyVal("env");
 		System.setProperty("conf_file", env);
 		log.info("Config file - " + System.getProperty("conf_file"));
 		return ConfigFactory.create(TestConfig.class, System.getProperties(), System.getenv());
 	}
 
+	@BeforeTest
+	@Parameters({"browserName"})
+	public void startTest(@Optional("default") String browserName) throws MalformedURLException {
+
+		log.info("=================================================================");
+		log.info("TestCase: \"" + testCaseName + "\" started.");
+		log.info("=================================================================");
+
+		drivers.set(new RemoteWebDriver(new URL(getGrid()), initCapabilities()));
+
+		drivers.get().manage().timeouts().implicitlyWait(Constants.ELEMENT_TIMEOUT, TimeUnit.SECONDS);
+		drivers.get().manage().timeouts().pageLoadTimeout(Constants.PAGE_TIMEOUT, TimeUnit.SECONDS);
+		drivers.get().manage().window().setSize(Constants.FULL_HD);
+		moveToCoordinate(0, 0, drivers.get());
+		driver = drivers.get();
+
+	}
+
+	@AfterTest
+	public void finishTest(ITestContext context) {
+		try {
+			if (context.getFailedTests().size() > 0) {
+				takeScreenshot(testCaseName, getDriver().getCurrentUrl(), getDriver());
+				log.info("Close browser.");
+			}
+		}
+		catch (NoSuchWindowException | NoSuchSessionException e) {
+			log.info("");
+			log.error("No such window.");
+			log.error("TestCase: \"" + testCaseName + "\" failed.");
+			log.info("");
+		}
+		catch (WebDriverException e) {
+			log.warn("Session was terminated");
+		}
+
+		//Define TC finish in console log.
+		getDriver().quit();
+		log.info("=================================================================");
+		log.info("TestCase: \"" + testCaseName + "\" finished.");
+		log.info("=================================================================");
+		log.info("");
+
+	}
+
+	@AfterSuite(alwaysRun = true)
+	public void finishTestSuite() {
+		log.info("=================================================================");
+		log.info("Test suite finished.");
+		log.info("=================================================================");
+		log.info("");
+	}
+
+	/**
+	 * @return capabilities for browsers.
+	 */
 	protected DesiredCapabilities initCapabilities() {
 
 		//List of browsers.
@@ -114,50 +172,5 @@ public class BaseTestCase {
 		return capabilities;
 	}
 
-	@BeforeTest
-	public void startTest(String browserName) throws MalformedURLException {
-
-		drivers.set(new RemoteWebDriver(new URL(getGrid()), initCapabilities()));
-
-		drivers.get().manage().timeouts().implicitlyWait(Constants.ELEMENT_TIMEOUT, TimeUnit.SECONDS);
-		drivers.get().manage().timeouts().pageLoadTimeout(Constants.PAGE_TIMEOUT, TimeUnit.SECONDS);
-		drivers.get().manage().window().setSize(Constants.FULL_HD);
-		moveToCoordinate(0, 0, drivers.get());
-		driver = drivers.get();
-
-	}
-
-	@AfterTest
-	public void finishTest() {
-		try {
-			takeScreenshot(testCaseName, getDriver().getCurrentUrl(), getDriver());
-			getDriver().quit();
-			log.info("Close browser.");
-		}
-		catch (NoSuchWindowException | NoSuchSessionException e) {
-			log.info("");
-			log.error("No such window.");
-			log.error("TestCase: \"" + testCaseName + "\" FAILED.");
-			log.info("");
-		}
-		catch (WebDriverException e) {
-			log.warn("Session was terminated");
-		}
-
-		//Define TC finish in console log.
-		log.info("=================================================================");
-		log.info("TestCase: \"" + testCaseName + "\" finished.");
-		log.info("=================================================================");
-		log.info("");
-
-	}
-
-	@AfterSuite(alwaysRun = true)
-	public void finishTestSuite() {
-		log.info("=================================================================");
-		log.info("Test suite finished.");
-		log.info("=================================================================");
-		log.info("");
-	}
 
 }

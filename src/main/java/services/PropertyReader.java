@@ -8,7 +8,7 @@ import java.util.Properties;
 import static services.EncodingService.convertUTF;
 
 /**
- * Created
+ * Created by user
  */
 public class PropertyReader {
 	public Properties properties;
