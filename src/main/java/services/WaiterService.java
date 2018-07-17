@@ -17,6 +17,11 @@ import static services.UrlService.stopLoad;
 @Log4j
 public class WaiterService {
 
+    /**
+     * @param text which need to wait
+     * @param element
+     * @param driver
+     */
     public static void waitForTextVisible(String text, WebElement element, WebDriver driver) {
         try {
             WebDriverWait wait = new WebDriverWait(driver,ELEMENT_TIMEOUT);
@@ -31,7 +36,11 @@ public class WaiterService {
         }
     }
 
-
+    /**
+     * Method will wait load page (page load complete)
+     * @param driver
+     * @param timeout
+     */
     public static void pageLoaderWait(WebDriver driver, int timeout) {
         log.info("Wait " + timeout + " seconds for page to load...");
         try {
@@ -45,6 +54,10 @@ public class WaiterService {
         }
     }
 
+    /**
+     * @param element which need to wait
+     * @param driver
+     */
     public static void waitForElementVisible(WebElement element, WebDriver driver) {
         try {
             WebDriverWait wait = new WebDriverWait(driver,ELEMENT_TIMEOUT);
@@ -58,6 +71,9 @@ public class WaiterService {
         }
     }
 
+    /**
+     * @param seconds - pause in a test
+     */
     public static void sleep(int seconds){
         try {
             Thread.sleep(seconds*1000);
@@ -67,10 +83,19 @@ public class WaiterService {
         }
     }
 
+    /**
+     * @param url - contains url which need to wait (default timeout)
+     * @param driver
+     */
     public static void waitPageLoader(String url, WebDriver driver) {
         waitPageLoader(url, PAGE_TIMEOUT, driver);
     }
 
+    /**
+     * @param url - contains url which need to wait
+     * @param seconds - timeout
+     * @param driver
+     */
     public static void waitPageLoader(String url, int seconds, WebDriver driver) {
         try {
             log.info("Waiting for \"" + url + "\" page...");
@@ -82,5 +107,22 @@ public class WaiterService {
             stopLoad(driver);
         }
 	}
+
+    /**
+     * @param element which need to wait
+     * @param driver
+     */
+    public static void waitForElementClickable(WebElement element, WebDriver driver) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver,ELEMENT_TIMEOUT);
+            wait.until(ExpectedConditions.elementToBeClickable(element));
+        }
+        catch (TimeoutException e){
+            assertTrue(false, "Element: \"" + element + "\" is not clickable.");
+        }
+        catch (StaleElementReferenceException e){
+            log.warn(("Element: \"" + element + "\" is not found in the cache."));
+        }
+    }
 
 }

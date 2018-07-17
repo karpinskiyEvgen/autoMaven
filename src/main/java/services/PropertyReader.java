@@ -42,6 +42,10 @@ public class PropertyReader {
 		return properties.getProperty(key)==null ? null : convertUTF(properties.getProperty(key));
 	}
 
+	/**
+	 * @param key string
+	 * @return
+	 */
 	public String getAnyVal(String key){
 		return System.getProperty(key)!=null ? System.getProperty(key)
 				: getValue(key);

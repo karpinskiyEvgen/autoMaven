@@ -79,6 +79,11 @@ public class BaseTestCase {
 		return ConfigFactory.create(TestConfig.class, System.getProperties(), System.getenv());
 	}
 
+	/**
+	 * Steps before starting every test
+	 * @param browserName, for example - chrome
+	 * @throws MalformedURLException
+	 */
 	@BeforeTest
 	@Parameters({"browserName"})
 	public void startTest(@Optional("default") String browserName) throws MalformedURLException {
@@ -97,6 +102,10 @@ public class BaseTestCase {
 
 	}
 
+	/**
+	 * Steps after test
+	 * @param context
+	 */
 	@AfterTest
 	public void finishTest(ITestContext context) {
 		try {
@@ -124,6 +133,9 @@ public class BaseTestCase {
 
 	}
 
+	/**
+	 * Steps after whole suite
+	 */
 	@AfterSuite(alwaysRun = true)
 	public void finishTestSuite() {
 		log.info("=================================================================");

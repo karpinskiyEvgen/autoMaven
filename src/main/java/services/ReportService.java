@@ -35,6 +35,11 @@ public class ReportService {
 		}
 	}
 
+	/**
+	 * @param testCaseName name of test (from name test class)
+	 * @param message - text on screenshot
+	 * @param driver
+	 */
 	public static void takeScreenshot(String testCaseName, String message, WebDriver driver) {
 
 		try {
@@ -60,6 +65,10 @@ public class ReportService {
 
 	}
 
+	/**
+	 * @param condition bool condition
+	 * @param errorMessage for logging
+	 */
 	public static void assertTrue(Boolean condition, String errorMessage ) {
 		if (!condition){
 			log.info("");
@@ -71,6 +80,10 @@ public class ReportService {
 
 	}
 
+	/**
+	 * @param condition bool condition
+	 * @param errorMessage for logging
+	 */
 	public static void assertFalse(Boolean condition, String errorMessage ) {
 		if (condition){
 			log.info("");
@@ -82,6 +95,12 @@ public class ReportService {
 
 	}
 
+	/**
+	 * @param condition1 expected result
+	 * @param condition2 actual result
+	 * @param errorMessage for logging
+	 * @param <T> - any object
+	 */
 	public static <T> void assertEquals(T condition1, T condition2, String errorMessage) {
 		String error = "Actual result:\n"+errorMessage+"\nExpected: \"" + condition2 + "\", but found: \"" + condition1 + "\".";
 		if (condition1 instanceof String){
@@ -97,28 +116,5 @@ public class ReportService {
 		Assert.assertEquals(condition1, condition2);
 
 	}
-
-	public static void assertEquals(double expected, double actual, double delta, String errorMessage) {
-		String error = "Actual result:\n" + errorMessage + "\nExpected: \"" + expected + "\", but found: \"" + actual + "\".";
-		if (Double.isInfinite(expected)) {
-			if (expected != actual) {
-				log.error(error);
-			}
-		} else if (Math.abs(expected - actual) > delta) {
-			log.error(error);
-		}
-		Assert.assertEquals(expected, actual, delta);
-	}
-
-	public static <T> void assertNotEquals(T condition1, T condition2, String errorMessage) {
-		if (condition1.equals(condition2)){
-			log.info("");
-			log.error("Actual result:");
-			log.error(errorMessage);
-			log.error("Expected: \"not " + condition2 + "\", but found: \"" + condition1 + "\".");
-		}
-		Assert.assertNotEquals(condition1, condition2);
-	}
-
 
 }
